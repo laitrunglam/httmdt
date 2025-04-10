@@ -30,7 +30,7 @@ import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { useToast } from "@/components/ui/use-toast";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
-
+import ChatUI from "@/components/shopping-view/chatUI";
 const categoriesWithIcon = [
   { id: "men", label: "Men", icon: ShirtIcon },
   { id: "women", label: "Women", icon: CloudLightning },
@@ -61,6 +61,9 @@ function ShoppingHome() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
 
   function handleNavigateToListingPage(getCurrentItem, section) {
     sessionStorage.removeItem("filters");
@@ -226,6 +229,19 @@ function ShoppingHome() {
         setOpen={setOpenDetailsDialog}
         productDetails={productDetails}
       />
+
+    {/* Floating Chat Icon */}
+    <div
+        className="fixed bottom-5 right-5 bg-blue-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
+        onClick={() => setIsChatOpen(!isChatOpen)}
+      >
+        💬
+      </div>
+
+      {/* Chat UI */}
+      {isChatOpen && <ChatUI onClose={() => setIsChatOpen(false)} />}
+
+
     </div>
   );
 }
