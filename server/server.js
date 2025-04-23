@@ -19,9 +19,9 @@ const chatbotRouter = require("./routes/chatbot/chatbot-routes");
 
 //create a database connection -> u can also
 //create a separate file for this and then import/use that file here
-
+//mongodb://localhost:27017
 mongoose
-  .connect("mongodb://localhost:27017")
+  .connect("mongodb+srv://khoabestsion:001203005908@cluster0.sccobrp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
   .then(() => console.log("MongoDB connected"))
   .catch((error) => console.log(error));
 
