@@ -2,21 +2,21 @@ export const registerFormControls = [
   {
     name: "userName",
     label: "User Name",
-    placeholder: "Enter your user name",
+    placeholder: "Nhập User name",
     componentType: "input",
     type: "text",
   },
   {
     name: "email",
     label: "Email",
-    placeholder: "Enter your email",
+    placeholder: "Nhập email của bạn",
     componentType: "input",
     type: "email",
   },
   {
     name: "password",
-    label: "Password",
-    placeholder: "Enter your password",
+    label: "Mật Khẩu",
+    placeholder: "Nhập mật khẩu của bạn",
     componentType: "input",
     type: "password",
   },
@@ -26,14 +26,14 @@ export const loginFormControls = [
   {
     name: "email",
     label: "Email",
-    placeholder: "Enter your email",
+    placeholder: "Nhập email",
     componentType: "input",
     type: "email",
   },
   {
     name: "password",
-    label: "Password",
-    placeholder: "Enter your password",
+    label: "Mật Khẩu",
+    placeholder: "Nhập mật khẩu",
     componentType: "input",
     type: "password",
   },
@@ -109,47 +109,47 @@ export const shoppingViewHeaderMenuItems = [
   },
   {
     id: "products",
-    label: "Products",
+    label: "Sản phẩm",
     path: "/shop/listing",
   },
   {
     id: "men",
-    label: "Men",
+    label: "Đàn ông",
     path: "/shop/listing",
   },
   {
     id: "women",
-    label: "Women",
+    label: "Phụ nữ",
     path: "/shop/listing",
   },
   {
     id: "kids",
-    label: "Kids",
+    label: "Trẻ em",
     path: "/shop/listing",
   },
   {
     id: "footwear",
-    label: "Footwear",
+    label: "Giày dép",
     path: "/shop/listing",
   },
   {
     id: "accessories",
-    label: "Accessories",
+    label: "Phụ kiện",
     path: "/shop/listing",
   },
   {
     id: "search",
-    label: "Search",
-    path: "/shop/search",
+    label: "Tìm kiếm",
+    path: "/shop/search",   
   },
 ];
 
 export const categoryOptionsMap = {
-  men: "Men",
-  women: "Women",
-  kids: "Kids",
-  accessories: "Accessories",
-  footwear: "Footwear",
+  men: "Đàn ông",
+  women: "Phụ nữ",
+  kids: "Trẻ em",
+  accessories: "Phụ kiện",
+  footwear: "Giày dép",
 };
 
 export const brandOptionsMap = {

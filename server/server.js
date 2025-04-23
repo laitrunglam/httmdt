@@ -20,6 +20,7 @@ const paymentRoutes = require("./routes/payment.routes");
 
 const adminOrdersRouter = require("./routes/admin/orders-routes");
 
+const chatbotRouter = require("./routes/chatbot/chatbot-routes");
 
 // Kết nối MongoDB
 mongoose
@@ -67,5 +68,6 @@ app.use("/api/payment", paymentRoutes);
 app.use("/api/common/feature", commonFeatureRouter);
 app.use("/api/admin/orders", adminOrdersRouter);
 
+app.use("/api/chatbot", chatbotRouter);
 // Khởi chạy server
 app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
