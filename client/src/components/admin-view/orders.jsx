@@ -67,19 +67,19 @@ function AdminOrdersView() {
   return (
     <Card>
       <CardHeader className="flex justify-between items-center">
-        <CardTitle>All Orders</CardTitle>
-        <Button onClick={() => setOpenCreateDialog(true)}>Add Order</Button>
+        <CardTitle>Toàn bộ đơn hàng</CardTitle>
+        <Button onClick={() => setOpenCreateDialog(true)}>Thêm đơn hàng</Button>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Order ID</TableHead>
-              <TableHead>User ID</TableHead> {/* 👈 Thêm cột User ID */}
-              <TableHead>Order Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead>ID đơn hàng</TableHead>
+              <TableHead>ID người dùng</TableHead> {/* 👈 Thêm cột User ID */}
+              <TableHead>Ngày đặt hàng</TableHead>
+              <TableHead>Trạng thái</TableHead>
+              <TableHead>Đơn giá</TableHead>
+              <TableHead>Hoạt động</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -101,13 +101,13 @@ function AdminOrdersView() {
                 </TableCell>
                 <TableCell>${orderItem.totalAmount}</TableCell>
                 <TableCell className="space-x-2">
-                  <Button onClick={() => handleFetchOrderDetails(orderItem._id)}>Details</Button>
-                  <Button variant="destructive" onClick={() => handleDelete(orderItem._id)}>Delete</Button>
+                  <Button onClick={() => handleFetchOrderDetails(orderItem._id)}>Chi tiết</Button>
+                  <Button variant="destructive" onClick={() => handleDelete(orderItem._id)}>Xóa</Button>
                 </TableCell>
               </TableRow>
             )) : (
               <TableRow>
-                <TableCell colSpan={6} className="text-center">No orders found.</TableCell>
+                <TableCell colSpan={6} className="text-center">Không có đơn hàng.</TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -131,24 +131,24 @@ function AdminOrdersView() {
         <DialogContent>
           <CommonForm
             formControls={[
-              { label: "User ID", name: "userId", componentType: "input" },
-              { label: "Total Amount", name: "totalAmount", componentType: "input" },
+              { label: "ID người dùng", name: "userId", componentType: "input" },
+              { label: "Thành tiền", name: "totalAmount", componentType: "input" },
               {
-                label: "Payment Method", name: "paymentMethod", componentType: "select",
-                options: [ { id: "Cash", label: "Cash" }, { id: "ZaloPay", label: "ZaloPay" } ]
+                label: "Phương pháp thanh toán", name: "paymentMethod", componentType: "select",
+                options: [ { id: "Cash", label: "Tiền mặt" }, { id: "ZaloPay", label: "ZaloPay" } ]
               },
               {
-                label: "Order Status", name: "orderStatus", componentType: "select",
+                label: "Trạng thái đơn hàng", name: "orderStatus", componentType: "select",
                 options: [
-                  { id: "pending", label: "Pending" },
-                  { id: "confirmed", label: "Confirmed" },
-                  { id: "rejected", label: "Rejected" }
+                  { id: "pending", label: "Đang chờ" },
+                  { id: "confirmed", label: "Xác nhận" },
+                  { id: "rejected", label: "Hủy đơn" }
                 ]
               },
             ]}
             formData={formData}
             setFormData={setFormData}
-            buttonText="Create Order"
+            buttonText="Tạo đơn hàng"
             onSubmit={handleCreate}
           />
         </DialogContent>

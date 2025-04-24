@@ -20,6 +20,8 @@ import { ArrowUpDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 
 function createSearchParamsHelper(filterParams) {
   const queryParams = [];
@@ -38,7 +40,8 @@ function createSearchParamsHelper(filterParams) {
 }
 
 function ShoppingListing() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); // Initialize useDispatch
+  const navigate = useNavigate(); // Initialize navigate
   const { productList, productDetails } = useSelector(
     (state) => state.shopProducts
   );
@@ -84,9 +87,17 @@ function ShoppingListing() {
   }
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
-    console.log(cartItems);
+    if (!user) { // Check if the user is not logged in
+      toast({
+        title: "Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.",
+        variant: "destructive",
+      });
+      navigate("/auth/login"); // Redirect to the login page
+      return;
+    }
+  
     let getCartItems = cartItems.items || [];
-
+  
     if (getCartItems.length) {
       const indexOfCurrentItem = getCartItems.findIndex(
         (item) => item.productId === getCurrentProductId
@@ -95,15 +106,15 @@ function ShoppingListing() {
         const getQuantity = getCartItems[indexOfCurrentItem].quantity;
         if (getQuantity + 1 > getTotalStock) {
           toast({
-            title: `Only ${getQuantity} quantity can be added for this item`,
+            title: `Chỉ có thể thêm ${getQuantity} mặt hàng này`,
             variant: "destructive",
           });
-
+  
           return;
         }
       }
     }
-
+  
     dispatch(
       addToCart({
         userId: user?.id,
@@ -114,7 +125,7 @@ function ShoppingListing() {
       if (data?.payload?.success) {
         dispatch(fetchCartItems(user?.id));
         toast({
-          title: "Product is added to cart",
+          title: "Thêm sản phẩm vào giỏ thành công",
         });
       }
     });

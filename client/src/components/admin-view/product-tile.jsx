@@ -41,9 +41,9 @@ function AdminProductTile({
               setFormData(product);
             }}
           >
-            Edit
+            Sửa
           </Button>
-          <Button onClick={() => handleDelete(product?._id)}>Delete</Button>
+          <Button onClick={() => handleDelete(product?._id)}>Xóa</Button>
         </CardFooter>
       </div>
     </Card>

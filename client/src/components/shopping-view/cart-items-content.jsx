@@ -10,7 +10,8 @@ function UserCartItemsContent({ cartItem }) {
   const { productList } = useSelector((state) => state.shopProducts);
   const dispatch = useDispatch();
   const { toast } = useToast();
-
+  const product = productList.find((product) => product._id === cartItem?.productId);
+  const totalStock = product?.totalStock || 0; // Default to 0 if not found
   function handleUpdateQuantity(getCartItem, typeOfAction) {
     if (typeOfAction == "plus") {
       let getCartItems = cartItems.items || [];
@@ -31,7 +32,7 @@ function UserCartItemsContent({ cartItem }) {
           const getQuantity = getCartItems[indexOfCurrentCartItem].quantity;
           if (getQuantity + 1 > getTotalStock) {
             toast({
-              title: `Only ${getQuantity} quantity can be added for this item`,
+              title: `Chỉ có thể thêm ${getQuantity} sản phẩm cho mặt hàng này`,
               variant: "destructive",
             });
 
@@ -53,7 +54,7 @@ function UserCartItemsContent({ cartItem }) {
     ).then((data) => {
       if (data?.payload?.success) {
         toast({
-          title: "Cart item is updated successfully",
+          title: "Cập nhật giỏ hàng thành công",
         });
       }
     });
@@ -65,7 +66,7 @@ function UserCartItemsContent({ cartItem }) {
     ).then((data) => {
       if (data?.payload?.success) {
         toast({
-          title: "Cart item is deleted successfully",
+          title: "Xóa sản phẩm thành công",
         });
       }
     });
@@ -80,6 +81,7 @@ function UserCartItemsContent({ cartItem }) {
       />
       <div className="flex-1">
         <h3 className="font-extrabold">{cartItem?.title}</h3>
+        <p className="text-sm text-gray-500">Trong kho: {totalStock}</p> {/* Display stock */}
         <div className="flex items-center gap-2 mt-1">
           <Button
             variant="outline"
@@ -99,17 +101,16 @@ function UserCartItemsContent({ cartItem }) {
             onClick={() => handleUpdateQuantity(cartItem, "plus")}
           >
             <Plus className="w-4 h-4" />
-            <span className="sr-only">Decrease</span>
+            <span className="sr-only">Increase</span>
           </Button>
         </div>
       </div>
       <div className="flex flex-col items-end">
         <p className="font-semibold">
-          $
           {(
             (cartItem?.salePrice > 0 ? cartItem?.salePrice : cartItem?.price) *
             cartItem?.quantity
-          ).toFixed(2)}
+          ).toFixed(2)}₫
         </p>
         <Trash
           onClick={() => handleCartItemDelete(cartItem)}
