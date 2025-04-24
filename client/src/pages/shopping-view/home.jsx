@@ -1,26 +1,37 @@
 import { Button } from "@/components/ui/button";
-import bannerOne from "../../assets/banner-1.webp";
-import bannerTwo from "../../assets/banner-2.webp";
-import bannerThree from "../../assets/banner-3.webp";
+
+import logoBCT from '../../assets/logoSaleNoti.png';
+import visa from '../../assets/Visa.png';
+import cod from '../../assets/cod.png';
+import pay from '../../assets/pay.png';
+
+// import bannerOne from "../../assets/banner-1.webp";
+// import bannerTwo from "../../assets/banner-2.webp";
+// import bannerThree from "../../assets/banner-3.webp";
 import {
   Airplay,
   BabyIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  CloudLightning,
+  // CloudLightning,
   Heater,
   Images,
   Shirt,
-  ShirtIcon,
+  // ShirtIcon,
   ShoppingBasket,
-  UmbrellaIcon,
+  // UmbrellaIcon,
   WashingMachine,
   WatchIcon,
   Footprints,
-  // Mars, 
-  // Venus
+  FacebookIcon,
+  InstagramIcon,
+  TwitterIcon,
+  PhoneIcon,
+  MailIcon,
+  MapPinIcon,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -34,12 +45,13 @@ import { useToast } from "@/components/ui/use-toast";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
 import ChatUI from "@/components/shopping-view/chatUI";
+
 const categoriesWithIcon = [
-  { id: "men", label: "Đàn ông", icon: WatchIcon },
-  { id: "women", label: "Phụ nữ", icon: WashingMachine },
+  { id: "men", label: "Nam", icon: WatchIcon },
+  { id: "women", label: "Nữ", icon: WashingMachine },
   { id: "kids", label: "Trẻ em", icon: BabyIcon },
   { id: "accessories", label: "Phụ kiện", icon: WatchIcon },
-  { id: "footwear", label: "Giày dép", icon: Footprints  },
+  { id: "footwear", label: "Giày", icon: Footprints },
 ];
 
 const brandsWithIcon = [
@@ -50,6 +62,7 @@ const brandsWithIcon = [
   { id: "zara", label: "Zara", icon: Images },
   { id: "h&m", label: "H&M", icon: Heater },
 ];
+
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const { productList, productDetails } = useSelector(
@@ -66,7 +79,6 @@ function ShoppingHome() {
   const { toast } = useToast();
 
   const [isChatOpen, setIsChatOpen] = useState(false);
-
 
   function handleNavigateToListingPage(getCurrentItem, section) {
     sessionStorage.removeItem("filters");
@@ -127,7 +139,7 @@ function ShoppingHome() {
   }, [dispatch]);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen font-sans">
       <div className="relative w-full h-[600px] overflow-hidden">
         {featureImageList && featureImageList.length > 0
           ? featureImageList.map((slide, index) => (
@@ -169,12 +181,11 @@ function ShoppingHome() {
       </div>
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Phân loại
-          </h2>
+          <h2 className="text-3xl font-bold text-center mb-8">Phân loại</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {categoriesWithIcon.map((categoryItem) => (
               <Card
+                key={categoryItem.id}
                 onClick={() =>
                   handleNavigateToListingPage(categoryItem, "category")
                 }
@@ -196,6 +207,7 @@ function ShoppingHome() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {brandsWithIcon.map((brandItem) => (
               <Card
+                key={brandItem.id}
                 onClick={() => handleNavigateToListingPage(brandItem, "brand")}
                 className="cursor-pointer hover:shadow-lg transition-shadow"
               >
@@ -212,12 +224,13 @@ function ShoppingHome() {
       <section className="py-12">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8">
-            Sản phẩm nổi bật
+            Sản phẩm nổi bật
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {productList && productList.length > 0
               ? productList.map((productItem) => (
                   <ShoppingProductTile
+                    key={productItem.id}
                     handleGetProductDetails={handleGetProductDetails}
                     product={productItem}
                     handleAddtoCart={handleAddtoCart}
@@ -227,24 +240,25 @@ function ShoppingHome() {
           </div>
         </div>
       </section>
+
+
+
       <ProductDetailsDialog
         open={openDetailsDialog}
         setOpen={setOpenDetailsDialog}
         productDetails={productDetails}
       />
 
-    {/* Floating Chat Icon */}
-    <div
+      {/* Floating Chat Icon */}
+      {/* <div
         className="fixed bottom-5 right-5 bg-blue-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
         onClick={() => setIsChatOpen(!isChatOpen)}
       >
         💬
-      </div>
+      </div> */}
 
       {/* Chat UI */}
-      {isChatOpen && <ChatUI onClose={() => setIsChatOpen(false)} />}
-
-
+      {/* {isChatOpen && <ChatUI onClose={() => setIsChatOpen(false)} />} */}
     </div>
   );
 }

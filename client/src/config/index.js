@@ -14,7 +14,7 @@ export const registerFormControls = [
     type: "email",
   },
   {
-    name: "password",
+    name: "password", 
     label: "Mật Khẩu",
     placeholder: "Nhập mật khẩu của bạn",
     componentType: "input",
@@ -41,32 +41,32 @@ export const loginFormControls = [
 
 export const addProductFormElements = [
   {
-    label: "Title",
+    label: "Tiêu đề",
     name: "title",
     componentType: "input",
     type: "text",
-    placeholder: "Enter product title",
+    placeholder: "Nhập tiêu đề sản phẩm",
   },
   {
-    label: "Description",
+    label: "Mô tả",
     name: "description",
     componentType: "textarea",
-    placeholder: "Enter product description",
+    placeholder: "Nhập mô tả sản phẩm",
   },
   {
-    label: "Category",
+    label: "Danh mục",
     name: "category",
     componentType: "select",
     options: [
-      { id: "men", label: "Men" },
-      { id: "women", label: "Women" },
-      { id: "kids", label: "Kids" },
-      { id: "accessories", label: "Accessories" },
-      { id: "footwear", label: "Footwear" },
+      { id: "men", label: "Nam" },
+      { id: "women", label: "Nữ" },
+      { id: "kids", label: "Trẻ em" },
+      { id: "accessories", label: "Phụ kiện" },
+      { id: "footwear", label: "Giày" },
     ],
   },
   {
-    label: "Brand",
+    label: "Thương hiệu",
     name: "brand",
     componentType: "select",
     options: [
@@ -79,32 +79,32 @@ export const addProductFormElements = [
     ],
   },
   {
-    label: "Price",
+    label: "Giá gốc",
     name: "price",
     componentType: "input",
     type: "number",
-    placeholder: "Enter product price",
+    placeholder: "Nhập giá sản phẩm",
   },
   {
-    label: "Sale Price",
+    label: "Giá khuyến mãi",
     name: "salePrice",
     componentType: "input",
     type: "number",
-    placeholder: "Enter sale price (optional)",
+    placeholder: "Nhập giá khuyến mãi (nếu có)",
   },
   {
-    label: "Total Stock",
+    label: "Kho hàng",
     name: "totalStock",
     componentType: "input",
     type: "number",
-    placeholder: "Enter total stock",
+    placeholder: "Nhập số lượng sản phẩm trong kho",
   },
 ];
 
 export const shoppingViewHeaderMenuItems = [
   {
     id: "home",
-    label: "Home",
+    label: "Trang chủ",
     path: "/shop/home",
   },
   {
@@ -114,12 +114,12 @@ export const shoppingViewHeaderMenuItems = [
   },
   {
     id: "men",
-    label: "Đàn ông",
+    label: "Nam",
     path: "/shop/listing",
   },
   {
     id: "women",
-    label: "Phụ nữ",
+    label: "Nữ",
     path: "/shop/listing",
   },
   {
@@ -129,7 +129,7 @@ export const shoppingViewHeaderMenuItems = [
   },
   {
     id: "footwear",
-    label: "Giày dép",
+    label: "Giày",
     path: "/shop/listing",
   },
   {
@@ -145,11 +145,11 @@ export const shoppingViewHeaderMenuItems = [
 ];
 
 export const categoryOptionsMap = {
-  men: "Đàn ông",
-  women: "Phụ nữ",
+  men: "Nam",
+  women: "Nữ",
   kids: "Trẻ em",
   accessories: "Phụ kiện",
-  footwear: "Giày dép",
+  footwear: "Giày",
 };
 
 export const brandOptionsMap = {
@@ -163,11 +163,11 @@ export const brandOptionsMap = {
 
 export const filterOptions = {
   category: [
-    { id: "men", label: "Men" },
-    { id: "women", label: "Women" },
-    { id: "kids", label: "Kids" },
-    { id: "accessories", label: "Accessories" },
-    { id: "footwear", label: "Footwear" },
+    { id: "men", label: "Nam" },
+    { id: "women", label: "Nữ" },
+    { id: "kids", label: "Trẻ em" },
+    { id: "accessories", label: "Phụ kiện" },
+    { id: "footwear", label: "Giày" },
   ],
   brand: [
     { id: "nike", label: "Nike" },
@@ -180,45 +180,45 @@ export const filterOptions = {
 };
 
 export const sortOptions = [
-  { id: "price-lowtohigh", label: "Price: Low to High" },
-  { id: "price-hightolow", label: "Price: High to Low" },
-  { id: "title-atoz", label: "Title: A to Z" },
-  { id: "title-ztoa", label: "Title: Z to A" },
+  { id: "price-lowtohigh", label: "Giá: Thấp → cao" },
+  { id: "price-hightolow", label: "Giá: Cao → thấp" },
+  { id: "title-atoz", label: "Tên: A → Z  " },
+  { id: "title-ztoa", label: "Title: Z → A" },
 ];
 
 export const addressFormControls = [
   {
-    label: "Address",
+    label: "Địa chỉ",
     name: "address",
     componentType: "input",
     type: "text",
-    placeholder: "Enter your address",
+    placeholder: "Nhập địa chỉ",
   },
   {
-    label: "City",
+    label: "Tỉnh/Thành phố",
     name: "city",
     componentType: "input",
     type: "text",
-    placeholder: "Enter your city",
+    placeholder: "Nhập tỉnh/thành phố",
   },
   {
-    label: "Pincode",
+    label: "Quận/Huyện",
     name: "pincode",
     componentType: "input",
     type: "text",
-    placeholder: "Enter your pincode",
+    placeholder: "Nhập quận/huyện",
   },
   {
-    label: "Phone",
+    label: "Số điện thoại",
     name: "phone",
     componentType: "input",
     type: "text",
-    placeholder: "Enter your phone number",
+    placeholder: "Nhập số điện thoại",
   },
   {
-    label: "Notes",
+    label: "Ghi chú", 
     name: "notes",
     componentType: "textarea",
-    placeholder: "Enter any additional notes",
+    placeholder: "Nhập ghi chú (nếu có)",
   },
 ];

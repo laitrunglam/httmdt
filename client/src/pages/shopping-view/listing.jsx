@@ -21,6 +21,9 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 
+import { useNavigate } from "react-router-dom";
+
+
 function createSearchParamsHelper(filterParams) {
   const queryParams = [];
 
@@ -51,6 +54,7 @@ function ShoppingListing() {
   const { toast } = useToast();
 
   const categorySearchParam = searchParams.get("category");
+  const navigate = useNavigate();
 
   function handleSort(value) {
     setSort(value);
@@ -79,10 +83,9 @@ function ShoppingListing() {
   }
 
   function handleGetProductDetails(getCurrentProductId) {
-    console.log(getCurrentProductId);
-    dispatch(fetchProductDetails(getCurrentProductId));
+    navigate(`/product/${getCurrentProductId}`);
   }
-
+  
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
     console.log(cartItems);
     let getCartItems = cartItems.items || [];
