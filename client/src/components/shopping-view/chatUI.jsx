@@ -28,14 +28,14 @@ function ChatUI({ onClose }) {
 
     const userMessage = { sender: "user", text: input };
     setMessages((prev) => [...prev, userMessage]);
-
+    setInput("");
     try {
       const response = await axios.post("http://localhost:5000/api/chatbot/chat", {
         userQuery: input,
         context: "general",
       });
 
-      console.log("Response from server:", response.data);
+      // console.log("Response from server:", response.data);
 
       // Check if the response contains products or a message
       if (response.data.products) {
@@ -63,7 +63,7 @@ function ChatUI({ onClose }) {
       setMessages((prev) => [...prev, errorMessage]);
     }
 
-    setInput("");
+    // setInput("");
   };
 
   return (

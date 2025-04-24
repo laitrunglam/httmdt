@@ -1,55 +1,69 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const initialState = {
-  orderList: [],
-  orderDetails: null,
-};
-
+// ✅ Lấy toàn bộ đơn hàng từ backend
 export const getAllOrdersForAdmin = createAsyncThunk(
-  "/order/getAllOrdersForAdmin",
+  "adminOrder/getAllOrdersForAdmin",
   async () => {
-    const response = await axios.get(
-      `http://localhost:5000/api/admin/orders/get`
-    );
-
-    return response.data;
+    const response = await axios.get("http://localhost:5000/api/admin/orders/get");
+    return response.data.data; // ✅ Trả ra mảng đơn hàng
   }
 );
 
+// ✅ Lấy chi tiết đơn hàng
 export const getOrderDetailsForAdmin = createAsyncThunk(
-  "/order/getOrderDetailsForAdmin",
+  "adminOrder/getOrderDetailsForAdmin",
   async (id) => {
-    const response = await axios.get(
-      `http://localhost:5000/api/admin/orders/details/${id}`
-    );
-
-    return response.data;
+    const response = await axios.get(`http://localhost:5000/api/admin/orders/details/${id}`);
+    return response.data.data;
   }
 );
 
-export const updateOrderStatus = createAsyncThunk(
-  "/order/updateOrderStatus",
-  async ({ id, orderStatus }) => {
-    const response = await axios.put(
-      `http://localhost:5000/api/admin/orders/update/${id}`,
-      {
-        orderStatus,
-      }
-    );
+// ✅ Tạo đơn hàng
+export const createOrderByAdmin = createAsyncThunk(
+  "adminOrder/createOrderByAdmin",
+  async (orderData) => {
+    const response = await axios.post("http://localhost:5000/api/admin/orders/create", orderData);
+    return response.data.data;
+  }
+);
 
-    return response.data;
+// ✅ Xóa đơn hàng
+export const deleteOrderByAdmin = createAsyncThunk(
+  "adminOrder/deleteOrderByAdmin",
+  async (id) => {
+    await axios.delete(`http://localhost:5000/api/admin/orders/delete/${id}`);
+    return id;
+  }
+);
+
+// ✅ Cập nhật trạng thái đơn hàng
+export const updateOrderStatus = createAsyncThunk(
+  "adminOrder/updateOrderStatus",
+  async ({ id, orderStatus }) => {
+    const response = await axios.put(`http://localhost:5000/api/admin/orders/update/${id}`, {
+      orderStatus,
+    });
+    return response.data.data;
   }
 );
 
 const adminOrderSlice = createSlice({
-  name: "adminOrderSlice",
-  initialState,
+  name: "adminOrder",
+  initialState: {
+    orderList: [],
+    orderDetails: null,
+    isLoading: false,
+  },
   reducers: {
-    resetOrderDetails: (state) => {
-      console.log("resetOrderDetails");
-
+    resetOrderDetails(state) {
       state.orderDetails = null;
+    },
+    updateOrderDetailsForm(state, action) {
+      state.orderDetails = {
+        ...state.orderDetails,
+        ...action.payload,
+      };
     },
   },
   extraReducers: (builder) => {
@@ -58,27 +72,27 @@ const adminOrderSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(getAllOrdersForAdmin.fulfilled, (state, action) => {
+        state.orderList = action.payload; // ✅ Đã fix đúng chỗ này
         state.isLoading = false;
-        state.orderList = action.payload.data;
-      })
-      .addCase(getAllOrdersForAdmin.rejected, (state) => {
-        state.isLoading = false;
-        state.orderList = [];
-      })
-      .addCase(getOrderDetailsForAdmin.pending, (state) => {
-        state.isLoading = true;
       })
       .addCase(getOrderDetailsForAdmin.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.orderDetails = action.payload.data;
+        state.orderDetails = action.payload;
       })
-      .addCase(getOrderDetailsForAdmin.rejected, (state) => {
-        state.isLoading = false;
-        state.orderDetails = null;
+      .addCase(createOrderByAdmin.fulfilled, (state, action) => {
+        state.orderList.unshift(action.payload);
+      })
+      .addCase(deleteOrderByAdmin.fulfilled, (state, action) => {
+        state.orderList = state.orderList.filter((order) => order._id !== action.payload);
+      })
+      .addCase(updateOrderStatus.fulfilled, (state, action) => {
+        const updated = action.payload;
+        const index = state.orderList.findIndex((o) => o._id === updated._id);
+        if (index !== -1) {
+          state.orderList[index] = updated;
+        }
       });
   },
 });
 
-export const { resetOrderDetails } = adminOrderSlice.actions;
-
+export const { resetOrderDetails, updateOrderDetailsForm } = adminOrderSlice.actions;
 export default adminOrderSlice.reducer;

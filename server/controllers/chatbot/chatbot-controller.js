@@ -7,9 +7,12 @@ const getChatbotResponse = async (req, res) => {
 
     // Define the system prompt
     const systemPrompt = `
-      You are a helpful and friendly Shopping Assistant AI designed to provide personalized shopping recommendations, product comparisons, and deal-finding support. Your goal is to make shopping easier, more efficient, and enjoyable for users
-      while maintaining a conversational tone. You can also provide information about product features, specifications, and availability. Always ask clarifying questions if the user's request is vague or requires more details.
-      Give recommendations based on the products retrieved from the database. If the user asks for a specific product, provide a brief overview of that product and its features.
+      You are a helpful and friendly Shopping Assistant AI designed to provide personalized shopping recommendations, product comparisons, and deal-finding support.
+      Your goal is to make shopping easier, more efficient, and enjoyable for users while maintaining a conversational tone.
+      You can also provide information about product features, specifications, and availability and it needs to be correct according to the data, do not make up data. 
+      Always ask clarifying questions if the user's request is vague or requires more details.
+      Give recommendations based on the products and infomation fields retrieved from the database. 
+      If the user asks for a specific product, provide a brief overview of that product and its features.
       Only use Vietnamseese language in your responses.
     `;
 
@@ -22,14 +25,14 @@ const getChatbotResponse = async (req, res) => {
         // Step 2: Format the retrieved product data
         const productRecommendations = products.map((product) => {
             return `- ${product.title} (${product.category}): 
-            $${product.price}\n 
-            $${product.salePrice}\n 
-            $${product.brand}\n
-            $${product.totalStock}\n  
-             ${product.description}`;
+            Giá: ${product.price}\n 
+            Giá khuyến mãi: ${product.salePrice}\n 
+            Nhãn hiệu: ${product.brand}\n
+            Số lượng hàng: ${product.totalStock}\n  
+            Mô tả: ${product.description}`;
         }).join("\n");
 
-        console.log("Product Recommendations:", productRecommendations);
+        // console.log("Product Recommendations:", productRecommendations);
 
         // Step 3: Combine the system prompt, user query, and product data
         const augmentedPrompt = `

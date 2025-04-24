@@ -41,11 +41,11 @@ export const loginFormControls = [
 
 export const addProductFormElements = [
   {
-    label: "Tiêu đề",
+    label: "Tên",
     name: "title",
     componentType: "input",
     type: "text",
-    placeholder: "Nhập tiêu đề sản phẩm",
+    placeholder: "Nhập tên sản phẩm",
   },
   {
     label: "Mô tả",

@@ -94,18 +94,27 @@ function ShoppingHome() {
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
-  function handleAddtoCart(getCurrentProductId) {
+  function handleAddtoCart(productId) {
+    if (!user) { // Check if the user is not logged in
+      toast({
+        title: "Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.",
+        variant: "destructive",
+      });
+      navigate("/auth/login"); // Redirect to the login page
+      return;
+    }
+  
     dispatch(
       addToCart({
         userId: user?.id,
-        productId: getCurrentProductId,
+        productId,
         quantity: 1,
       })
     ).then((data) => {
       if (data?.payload?.success) {
         dispatch(fetchCartItems(user?.id));
         toast({
-          title: "Product is added to cart",
+          title: "Sản phẩm đã được thêm vào giỏ hàng.",
         });
       }
     });

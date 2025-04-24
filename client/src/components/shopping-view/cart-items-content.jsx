@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteCartItem, updateCartQuantity } from "@/store/shop/cart-slice";
 import { useToast } from "../ui/use-toast";
 import { formatVND } from "../../lib/formatVND";
+import { Plus, Trash } from "lucide-react";
 
 function UserCartItemsContent({ cartItem }) {
   const { user } = useSelector((state) => state.auth);
@@ -10,7 +11,8 @@ function UserCartItemsContent({ cartItem }) {
   const { productList } = useSelector((state) => state.shopProducts);
   const dispatch = useDispatch();
   const { toast } = useToast();
-
+  const product = productList.find((product) => product._id === cartItem?.productId);
+  const totalStock = product?.totalStock || 0; // Default to 0 if not found
   function handleUpdateQuantity(getCartItem, typeOfAction) {
     if (typeOfAction === "plus") {
       let getCartItems = cartItems.items || [];
@@ -26,7 +28,7 @@ function UserCartItemsContent({ cartItem }) {
           const getQuantity = getCartItems[indexOfCurrentCartItem].quantity;
           if (getQuantity + 1 > getTotalStock) {
             toast({
-              title: `Only ${getQuantity} quantity can be added for this item`,
+              title: `Chỉ có thể thêm ${getQuantity} sản phẩm cho mặt hàng này`,
               variant: "destructive",
             });
             return;
@@ -47,7 +49,7 @@ function UserCartItemsContent({ cartItem }) {
     ).then((data) => {
       if (data?.payload?.success) {
         toast({
-          title: "Cart item is updated successfully",
+          title: "Cập nhật giỏ hàng thành công",
         });
       }
     });
@@ -59,7 +61,7 @@ function UserCartItemsContent({ cartItem }) {
     ).then((data) => {
       if (data?.payload?.success) {
         toast({
-          title: "Cart item is deleted successfully",
+          title: "Xóa sản phẩm thành công",
         });
       }
     });
@@ -80,9 +82,7 @@ function UserCartItemsContent({ cartItem }) {
       <img src={cartItem?.image} alt={cartItem?.title} className="w-20 h-20 rounded object-cover" />
       <div className="flex-1">
         <h3 className="font-extrabold">{cartItem?.title}</h3>
-        <p className="text-gray-500">
-          {cartItem.size && cartItem.color ? `${cartItem.size} / ${cartItem.color}` : ''}
-        </p>
+        <p className="text-sm text-gray-500">Trong kho: {totalStock}</p> {/* Display stock */}
         <div className="flex items-center gap-2 mt-1">
           <Button
             variant="outline"
@@ -102,11 +102,24 @@ function UserCartItemsContent({ cartItem }) {
             onClick={() => handleUpdateQuantity(cartItem, "plus")}
             aria-label="Increase quantity"
           >
-            +
+            <Plus className="w-4 h-4" />
+            <span className="sr-only">Increase</span>
           </Button>
         </div>
       </div>
-      <div className="text-red-500 font-semibold">{formatVND(unitPrice)}</div>
+      <div className="flex flex-col items-end">
+        <p className="font-semibold">
+          {(
+            (cartItem?.salePrice > 0 ? cartItem?.salePrice : cartItem?.price) *
+            cartItem?.quantity
+          ).toFixed(2)}₫
+        </p>
+        <Trash
+          onClick={() => handleCartItemDelete(cartItem)}
+          className="cursor-pointer mt-1"
+          size={20}
+        />
+      </div>
     </div>
   );
 }

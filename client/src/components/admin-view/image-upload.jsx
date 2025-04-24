@@ -69,7 +69,7 @@ function ProductImageUpload({
     <div
       className={`w-full  mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}
     >
-      <Label className="text-lg font-semibold mb-2 block">Upload Image</Label>
+      <Label className="text-lg font-semibold mb-2 block">Đăng ảnh</Label>
       <div
         onDragOver={handleDragOver}
         onDrop={handleDrop}
@@ -110,7 +110,7 @@ function ProductImageUpload({
               onClick={handleRemoveImage}
             >
               <XIcon className="w-4 h-4" />
-              <span className="sr-only">Remove File</span>
+              <span className="sr-only">Xóa</span>
             </Button>
           </div>
         )}
