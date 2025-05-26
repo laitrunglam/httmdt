@@ -10,26 +10,46 @@ function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
+  const [selectedItems, setSelectedItems] = useState({});
+  const [selectAll, setSelectAll] = useState(false);
   const dispatch = useDispatch();
   const { toast } = useToast();
 
+  function handleSelectItem(productId, isChecked) {
+    setSelectedItems((prev) => ({
+      ...prev,
+      [productId]: isChecked,
+    }));
+  }
+
+  function handleSelectAllItems(isChecked) {
+    const allSelected = {};
+    cartItems.items.forEach((item) => {
+      allSelected[item.productId] = isChecked;
+    });
+    setSelectedItems(allSelected);
+    setSelectAll(isChecked);
+  }
+
   const totalCartAmount =
-    cartItems && cartItems.items && cartItems.items.length > 0
-      ? cartItems.items.reduce(
-          (sum, currentItem) =>
-            sum +
-            (currentItem?.salePrice > 0
-              ? currentItem?.salePrice
-              : currentItem?.price) * currentItem?.quantity,
-          0
-        )
+    cartItems?.items?.length > 0
+      ? cartItems.items
+          .filter((item) => selectedItems[item.productId])
+          .reduce(
+            (sum, currentItem) =>
+              sum +
+              (currentItem?.salePrice > 0
+                ? currentItem?.salePrice
+                : currentItem?.price) * currentItem?.quantity,
+            0
+          )
       : 0;
 
   async function handleZaloPayPayment() {
-
-    if (!cartItems?.items?.length) {
+    const hasSelected = Object.values(selectedItems).some((val) => val);
+    if (!hasSelected) {
       toast({
-        title: "Your cart is empty. Please add items to proceed",
+        title: "Vui lòng chọn ít nhất một sản phẩm để thanh toán.",
         variant: "destructive",
       });
       return;
@@ -44,19 +64,16 @@ function ShoppingCheckout() {
     }
 
     try {
-
       const response = await fetch("http://localhost:5000/api/payment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        
         body: JSON.stringify({
           amount: totalCartAmount,
           username: user?.userName,
-          user_id: user?.id
+          user_id: user?.id,
         }),
-        
       });
 
       const data = await response.json();
@@ -89,15 +106,33 @@ function ShoppingCheckout() {
           setCurrentSelectedAddress={setCurrentSelectedAddress}
         />
         <div className="flex flex-col gap-4">
+          {cartItems?.items?.length > 0 && (
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={selectAll}
+                onChange={(e) => handleSelectAllItems(e.target.checked)}
+              />
+              <label className="text-sm font-medium">
+                {selectAll ? "Bỏ chọn tất cả" : "Chọn tất cả"}
+              </label>
+            </div>
+          )}
+
           {cartItems && cartItems.items && cartItems.items.length > 0
             ? cartItems.items.map((item) => (
-                <UserCartItemsContent key={item._id} cartItem={item} />
+                <UserCartItemsContent
+                  key={item._id}
+                  cartItem={item}
+                  isSelected={!!selectedItems[item.productId]}
+                  onSelectChange={handleSelectItem}
+                />
               ))
             : null}
           <div className="mt-8 space-y-4">
             <div className="flex justify-between">
               <span className="font-bold">Total</span>
-              <span className="font-bold">{totalCartAmount}₫</span>
+              <span className="font-bold">${totalCartAmount.toFixed(2)}</span>
             </div>
           </div>
           <div className="mt-4 w-full">
