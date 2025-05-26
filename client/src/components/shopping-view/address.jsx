@@ -9,7 +9,6 @@ import {
   editaAddress,
   fetchAllAddresses,
 } from "@/store/shop/address-slice";
-import AddressCard from "./address-card";
 import { useToast } from "../ui/use-toast";
 
 const initialAddressFormData = {
@@ -18,6 +17,7 @@ const initialAddressFormData = {
   phone: "",
   pincode: "",
   notes: "",
+  isDefault: false,
 };
 
 function Address({ setCurrentSelectedAddress, selectedId }) {
@@ -28,6 +28,19 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
   const { addressList } = useSelector((state) => state.shopAddress);
   const { toast } = useToast();
 
+  useEffect(() => {
+    dispatch(fetchAllAddresses(user?.id));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (addressList && addressList.length > 0) {
+      const defaultAddress = addressList.find((addr) => addr.isDefault);
+      const firstAddress = addressList[0];
+      const selected = defaultAddress ? defaultAddress._id : firstAddress._id;
+      setCurrentSelectedAddress(selected);
+    }
+  }, [addressList]);
+
   function handleManageAddress(event) {
     event.preventDefault();
 
@@ -37,41 +50,42 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
         title: "You can add max 3 addresses",
         variant: "destructive",
       });
-
       return;
     }
 
-    currentEditedId !== null
-      ? dispatch(
-          editaAddress({
-            userId: user?.id,
-            addressId: currentEditedId,
-            formData,
-          })
-        ).then((data) => {
-          if (data?.payload?.success) {
-            dispatch(fetchAllAddresses(user?.id));
-            setCurrentEditedId(null);
-            setFormData(initialAddressFormData);
-            toast({
-              title: "Cập nhật địa chỉ thành công",
-            });
-          }
+    if (currentEditedId !== null) {
+      dispatch(
+        editaAddress({
+          userId: user?.id,
+          addressId: currentEditedId,
+          formData,
         })
-      : dispatch(
-          addNewAddress({
-            ...formData,
-            userId: user?.id,
-          })
-        ).then((data) => {
-          if (data?.payload?.success) {
-            dispatch(fetchAllAddresses(user?.id));
-            setFormData(initialAddressFormData);
-            toast({
-              title: "Thêm địa chỉ thành công",
-            });
-          }
-        });
+      ).then((data) => {
+        if (data?.payload?.success) {
+          dispatch(fetchAllAddresses(user?.id));
+          setCurrentEditedId(null);
+          setFormData(initialAddressFormData);
+          toast({
+            title: "Cập nhật địa chỉ thành công",
+          });
+        }
+      });
+    } else {
+      dispatch(
+        addNewAddress({
+          ...formData,
+          userId: user?.id,
+        })
+      ).then((data) => {
+        if (data?.payload?.success) {
+          dispatch(fetchAllAddresses(user?.id));
+          setFormData(initialAddressFormData);
+          toast({
+            title: "Thêm địa chỉ thành công",
+          });
+        }
+      });
+    }
   }
 
   function handleDeleteAddress(getCurrentAddress) {
@@ -87,45 +101,47 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
     });
   }
 
-  function handleEditAddress(getCuurentAddress) {
-    setCurrentEditedId(getCuurentAddress?._id);
+  function handleEditAddress(getCurrentAddress) {
+    setCurrentEditedId(getCurrentAddress?._id);
     setFormData({
-      ...formData,
-      address: getCuurentAddress?.address,
-      city: getCuurentAddress?.city,
-      phone: getCuurentAddress?.phone,
-      pincode: getCuurentAddress?.pincode,
-      notes: getCuurentAddress?.notes,
+      address: getCurrentAddress?.address,
+      city: getCurrentAddress?.city,
+      phone: getCurrentAddress?.phone,
+      pincode: getCurrentAddress?.pincode,
+      notes: getCurrentAddress?.notes,
+      isDefault: getCurrentAddress?.isDefault || false,
     });
   }
 
   function isFormValid() {
     return Object.keys(formData)
-      .map((key) => formData[key].trim() !== "")
+      .filter((key) => key !== "isDefault")
+      .map((key) => formData[key].trim?.() !== "")
       .every((item) => item);
   }
 
-  useEffect(() => {
-    dispatch(fetchAllAddresses(user?.id));
-  }, [dispatch]);
-
-  console.log(addressList, "addressList");
-
   return (
     <Card>
-      <div className="mb-5 p-3 grid grid-cols-1 sm:grid-cols-2  gap-2">
-        {addressList && addressList.length > 0
-          ? addressList.map((singleAddressItem) => (
-              <AddressCard
-                selectedId={selectedId}
-                handleDeleteAddress={handleDeleteAddress}
-                addressInfo={singleAddressItem}
-                handleEditAddress={handleEditAddress}
-                setCurrentSelectedAddress={setCurrentSelectedAddress}
-              />
-            ))
-          : null}
+      <div className="p-4">
+        {addressList && addressList.length > 0 && (
+          <div className="flex flex-col gap-2">
+            <label className="font-medium">Chọn địa chỉ giao hàng:</label>
+            <select
+              className="border p-2 rounded"
+              value={selectedId || ""}
+              onChange={(e) => setCurrentSelectedAddress(e.target.value)}
+            >
+              {addressList.map((addr) => (
+                <option key={addr._id} value={addr._id}>
+                  {addr.address}, {addr.city}, {addr.phone}{" "}
+                  {addr.isDefault ? "(Mặc định)" : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
+
       <CardHeader>
         <CardTitle>
           {currentEditedId !== null ? "Sửa địa chỉ" : "Thêm địa chỉ"}
@@ -140,6 +156,44 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
           onSubmit={handleManageAddress}
           isBtnDisabled={!isFormValid()}
         />
+
+        {/* ✅ Checkbox đặt làm mặc định */}
+        <div className="flex items-center gap-2 mt-2">
+          <input
+            type="checkbox"
+            checked={
+              currentEditedId
+                ? formData.isDefault
+                : addressList.find((a) => a._id === selectedId)?.isDefault ||
+                  false
+            }
+            onChange={async (e) => {
+              const isChecked = e.target.checked;
+
+              if (!selectedId) return;
+
+              if (currentEditedId) {
+                setFormData({ ...formData, isDefault: isChecked });
+              } else {
+                await dispatch(
+                  editaAddress({
+                    userId: user?.id,
+                    addressId: selectedId,
+                    formData: { isDefault: isChecked },
+                  })
+                ).then((res) => {
+                  if (res?.payload?.success) {
+                    dispatch(fetchAllAddresses(user?.id));
+                    toast({
+                      title: "Đã cập nhật địa chỉ mặc định",
+                    });
+                  }
+                });
+              }
+            }}
+          />
+          <label className="text-sm">Đặt làm địa chỉ mặc định</label>
+        </div>
       </CardContent>
     </Card>
   );

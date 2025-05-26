@@ -1,14 +1,20 @@
 const Address = require("../../models/Address");
 
+// ✅ Thêm mới địa chỉ và xử lý mặc định
 const addAddress = async (req, res) => {
   try {
-    const { userId, address, city, pincode, phone, notes } = req.body;
+    const { userId, address, city, pincode, phone, notes, isDefault } = req.body;
 
     if (!userId || !address || !city || !pincode || !phone || !notes) {
       return res.status(400).json({
         success: false,
         message: "Invalid data provided!",
       });
+    }
+
+    // ✅ Nếu là mặc định thì loại bỏ mặc định ở địa chỉ khác
+    if (isDefault) {
+      await Address.updateMany({ userId }, { $set: { isDefault: false } });
     }
 
     const newlyCreatedAddress = new Address({
@@ -18,6 +24,7 @@ const addAddress = async (req, res) => {
       pincode,
       notes,
       phone,
+      isDefault: !!isDefault, // đảm bảo là boolean
     });
 
     await newlyCreatedAddress.save();
@@ -35,6 +42,7 @@ const addAddress = async (req, res) => {
   }
 };
 
+// ✅ Lấy danh sách địa chỉ
 const fetchAllAddress = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -60,6 +68,7 @@ const fetchAllAddress = async (req, res) => {
   }
 };
 
+// ✅ Sửa địa chỉ và xử lý mặc định
 const editAddress = async (req, res) => {
   try {
     const { userId, addressId } = req.params;
@@ -70,6 +79,14 @@ const editAddress = async (req, res) => {
         success: false,
         message: "User and address id is required!",
       });
+    }
+
+    // ✅ Nếu địa chỉ đang được set mặc định → bỏ mặc định các địa chỉ khác
+    if (formData.isDefault) {
+      await Address.updateMany(
+        { userId, _id: { $ne: addressId } },
+        { $set: { isDefault: false } }
+      );
     }
 
     const address = await Address.findOneAndUpdate(
@@ -101,6 +118,7 @@ const editAddress = async (req, res) => {
   }
 };
 
+// ✅ Xoá địa chỉ
 const deleteAddress = async (req, res) => {
   try {
     const { userId, addressId } = req.params;
