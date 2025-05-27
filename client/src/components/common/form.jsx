@@ -39,8 +39,8 @@ function CommonForm({
             }
           />
         );
-
         break;
+
       case "select":
         element = (
           <Select
@@ -66,8 +66,8 @@ function CommonForm({
             </SelectContent>
           </Select>
         );
-
         break;
+
       case "textarea":
         element = (
           <Textarea
@@ -83,7 +83,24 @@ function CommonForm({
             }
           />
         );
+        break;
 
+      case "date":
+        element = (
+          <input
+            type="date"
+            name={getControlItem.name}
+            id={getControlItem.name}
+            value={value}
+            onChange={(event) =>
+              setFormData({
+                ...formData,
+                [getControlItem.name]: event.target.value,
+              })
+            }
+            className="input" // bạn có thể đổi class cho phù hợp style của bạn
+          />
+        );
         break;
 
       default:

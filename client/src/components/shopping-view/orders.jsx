@@ -61,7 +61,7 @@ function ShoppingOrders() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID đơn hàng</TableHead>
+            
               <TableHead>Ngày đặt</TableHead>
               <TableHead>Ngày giao dự kiến</TableHead>
               <TableHead>Trạng thái</TableHead>
@@ -75,7 +75,6 @@ function ShoppingOrders() {
             {orderList && orderList.length > 0 ? (
               orderList.map((orderItem) => (
                 <TableRow key={orderItem?._id}>
-                  <TableCell>{orderItem?._id}</TableCell>
                   <TableCell>{formatDate(orderItem?.orderDate)}</TableCell>
                   <TableCell>
                     {formatDate(orderItem?.estimatedDeliveryDate)}

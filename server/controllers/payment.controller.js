@@ -31,7 +31,7 @@ exports.createPayment = async (req, res) => {
     item: JSON.stringify(items),
     embed_data: JSON.stringify(embed_data),
     amount: parseInt(amount),
-    callback_url: 'https://55c0-171-224-177-99.ngrok-free.app/api/payment/callback',
+    callback_url: 'https://f0c4-171-224-177-99.ngrok-free.app/api/payment/callback',
     description: `${username} - Thanh toán đơn hàng #${transID}`,
     bank_code: '',
   };
@@ -59,12 +59,10 @@ exports.createPayment = async (req, res) => {
 };
 
 exports.handleCallback = async (req, res) => {
-  
   let result = {};
 
   try {
     const dataStr = req.body.data;
-    
     const reqMac = req.body.mac;
     const mac = CryptoJS.HmacSHA256(dataStr, config.key2).toString(CryptoJS.enc.Hex);
 
@@ -73,20 +71,18 @@ exports.handleCallback = async (req, res) => {
       result.return_message = 'MAC not match';
       return res.json(result);
     }
-    
+
     const dataJson = JSON.parse(dataStr);
     const embed_data = JSON.parse(dataJson['embed_data']);
     const app_trans_id = dataJson['app_trans_id'];
     const username = dataJson['app_user'];
     const userId = embed_data.user_id;
-    console.log("username testID: ",userId);
-    
     const amount = dataJson['amount'];
 
     console.log("✅ Thanh toán thành công - app_trans_id:", app_trans_id);
 
-    // Tìm giỏ hàng theo userId
-    const cart = await Cart.findOne({ userId });
+    // Tìm giỏ hàng và populate sản phẩm
+    const cart = await Cart.findOne({ userId }).populate('items.productId');
     if (!cart) {
       console.log("❌ Không tìm thấy giỏ hàng cho user:", username);
       result.return_code = 0;
@@ -94,24 +90,31 @@ exports.handleCallback = async (req, res) => {
       return res.json(result);
     }
 
+    // Chuyển item thành { title, price, quantity }
+    const cartItems = cart.items.map((item) => ({
+      productId: item.productId._id,
+      title: item.productId.title,
+      price: item.productId.price,
+      quantity: item.quantity,
+    }));
+
     // Tạo đơn hàng
     const newOrder = new Order({
       userId: userId,
       cartId: cart._id,
-      cartItems: cart.items,
+      cartItems: cartItems,
       addressInfo: cart.addressInfo || {},
-      orderStatus: 'confirmed',
+      orderStatus: 'delivered',
       paymentMethod: 'ZaloPay',
       paymentStatus: 'paid',
       totalAmount: amount,
       orderDate: moment().toISOString(),
       orderUpdateDate: moment().toISOString(),
       paymentId: app_trans_id,
-      payerId: '', // ZaloPay không có trường này
+      payerId: '',
       estimatedDeliveryDate: moment().add(5, 'days').toISOString(),
     });
-    console.log("newOrder:",newOrder);
-    
+
     await newOrder.save();
     await Cart.findByIdAndDelete(cart._id);
 
@@ -127,6 +130,7 @@ exports.handleCallback = async (req, res) => {
 
   res.json(result);
 };
+
 
 exports.checkOrderStatus = async (req, res) => {
   const { app_trans_id } = req.body;

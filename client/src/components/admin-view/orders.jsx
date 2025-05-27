@@ -1,5 +1,3 @@
-// ✅ 2. File: components/admin-view/orders.jsx
-
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -28,21 +26,19 @@ function AdminOrdersView() {
     totalAmount: "",
     paymentMethod: "Cash",
     orderStatus: "pending",
+    estimatedDeliveryDate: "", // ✅ dùng đúng tên field
   });
 
   const dispatch = useDispatch();
-  const { orderList, orderDetails } = useSelector((state) => state.adminOrder);
+  const { orderList } = useSelector((state) => state.adminOrder);
 
   useEffect(() => {
     dispatch(getAllOrdersForAdmin());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (orderDetails !== null) setOpenDetailsDialog(true);
-  }, [orderDetails]);
-
   const handleFetchOrderDetails = (id) => {
     dispatch(getOrderDetailsForAdmin(id));
+    setOpenDetailsDialog(true);
   };
 
   const handleCreate = (e) => {
@@ -56,6 +52,7 @@ function AdminOrdersView() {
         totalAmount: "",
         paymentMethod: "Cash",
         orderStatus: "pending",
+        estimatedDeliveryDate: "",
       });
     });
   };
@@ -68,15 +65,15 @@ function AdminOrdersView() {
     <Card>
       <CardHeader className="flex justify-between items-center">
         <CardTitle>Toàn bộ đơn hàng</CardTitle>
-        <Button onClick={() => setOpenCreateDialog(true)}>Thêm đơn hàng</Button>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID đơn hàng</TableHead>
-              <TableHead>ID người dùng</TableHead> {/* 👈 Thêm cột User ID */}
+              <TableHead className="hidden">ID đơn hàng</TableHead>
+              <TableHead className="hidden">ID người dùng</TableHead>
               <TableHead>Ngày đặt hàng</TableHead>
+              <TableHead>Ngày giao dự kiến</TableHead>
               <TableHead>Trạng thái</TableHead>
               <TableHead>Đơn giá</TableHead>
               <TableHead>Hoạt động</TableHead>
@@ -85,9 +82,14 @@ function AdminOrdersView() {
           <TableBody>
             {orderList?.length > 0 ? orderList.map((orderItem) => (
               <TableRow key={orderItem._id}>
-                <TableCell>{orderItem._id}</TableCell>
-                <TableCell>{orderItem.userId}</TableCell>
+                <TableCell className="hidden">{orderItem._id}</TableCell>
+                <TableCell className="hidden">{orderItem.userId}</TableCell>
                 <TableCell>{orderItem?.orderDate?.split("T")[0]}</TableCell>
+                <TableCell>
+                  {orderItem?.estimatedDeliveryDate
+                    ? orderItem.estimatedDeliveryDate.split("T")[0]
+                    : "Chưa có"}
+                </TableCell>
                 <TableCell>
                   <Badge className={`py-1 px-3 ${
                     orderItem.orderStatus === "confirmed"
@@ -107,7 +109,7 @@ function AdminOrdersView() {
               </TableRow>
             )) : (
               <TableRow>
-                <TableCell colSpan={6} className="text-center">Không có đơn hàng.</TableCell>
+                <TableCell colSpan={7} className="text-center">Không có đơn hàng.</TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -115,15 +117,14 @@ function AdminOrdersView() {
       </CardContent>
 
       {/* Dialog: Chi tiết đơn hàng */}
-      <Dialog open={openDetailsDialog} onOpenChange={() => { setOpenDetailsDialog(false); dispatch(resetOrderDetails()); }}>
-      <AdminOrderDetailsView
-  orderDetails={orderDetails}
-  onUpdate={() => {
-    dispatch(getAllOrdersForAdmin());
-    setOpenDetailsDialog(false);
-    dispatch(resetOrderDetails());
-  }}
-/>
+      <Dialog
+        open={openDetailsDialog}
+        onOpenChange={(isOpen) => {
+          setOpenDetailsDialog(isOpen);
+          if (!isOpen) dispatch(resetOrderDetails());
+        }}
+      >
+        <AdminOrderDetailsView />
       </Dialog>
 
       {/* Dialog: Tạo đơn hàng */}
@@ -145,6 +146,12 @@ function AdminOrdersView() {
                   { id: "rejected", label: "Hủy đơn" }
                 ]
               },
+              {
+                label: "Ngày giao dự kiến",
+                name: "estimatedDeliveryDate", // ✅ dùng đúng tên để khớp backend
+                componentType: "input",
+                type: "date"
+              }
             ]}
             formData={formData}
             setFormData={setFormData}

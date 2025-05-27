@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CommonForm from "../common/form";
 import { DialogContent } from "../ui/dialog";
 import { Label } from "../ui/label";
@@ -12,38 +12,65 @@ import {
 } from "@/store/admin/order-slice";
 import { useToast } from "../ui/use-toast";
 
-const initialFormData = {
-  status: "",
-};
-
-function AdminOrderDetailsView({ orderDetails }) {
-  const [formData, setFormData] = useState(initialFormData);
-  const { user } = useSelector((state) => state.auth);
+function AdminOrderDetailsView() {
   const dispatch = useDispatch();
   const { toast } = useToast();
+  const { user } = useSelector((state) => state.auth);
+  const orderDetails = useSelector((state) => state.adminOrder.orderDetails);
 
-  console.log(orderDetails, "orderDetailsorderDetails");
+  const [formData, setFormData] = useState({
+    status: "",
+    orderDate: "",
+    estimatedDeliveryDate: "",
+  });
+
+  useEffect(() => {
+    if (orderDetails) {
+      setFormData({
+        status: orderDetails.orderStatus || "",
+        orderDate: orderDetails.orderDate?.split("T")[0] || "",
+        estimatedDeliveryDate: orderDetails.estimatedDeliveryDate?.split("T")[0] || "",
+      });
+    }
+  }, [orderDetails]);
 
   function handleUpdateStatus(event) {
     event.preventDefault();
-    const { status } = formData;
+    const { status, orderDate, estimatedDeliveryDate } = formData;
 
     dispatch(
-      updateOrderStatus({ id: orderDetails?._id, orderStatus: status })
+      updateOrderStatus({
+        id: orderDetails?._id,
+        orderStatus: status,
+        orderDate,
+        estimatedDeliveryDate,
+      })
     ).then((data) => {
       if (data?.payload?.success) {
         dispatch(getOrderDetailsForAdmin(orderDetails?._id));
         dispatch(getAllOrdersForAdmin());
-        setFormData(initialFormData);
-        toast({
-          title: data?.payload?.message,
-        });
+        toast({ title: data?.payload?.message });
+      } else {
+        toast({ title: "Cập nhật thất bại", variant: "destructive" });
       }
     });
   }
 
+  const statusMap = {
+    pending: { label: "Đang chờ", color: "bg-black" },
+    processing: { label: "Đang xử lý", color: "bg-yellow-600" },
+    shipped: { label: "Đang vận chuyển", color: "bg-blue-600" },
+    delivered: { label: "Giao hàng thành công", color: "bg-green-500" },
+    cancelled: { label: "Từ chối đơn hàng", color: "bg-red-600" },
+  };
+
+  const currentStatus = statusMap[orderDetails?.orderStatus] || {
+    label: orderDetails?.orderStatus || "Không xác định",
+    color: "bg-gray-600",
+  };
+
   return (
-    <DialogContent className="sm:max-w-[600px]">
+    <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
       <div className="grid gap-6">
         <div className="grid gap-2">
           <div className="flex mt-6 items-center justify-between">
@@ -51,8 +78,8 @@ function AdminOrderDetailsView({ orderDetails }) {
             <Label>{orderDetails?._id}</Label>
           </div>
           <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Ngày đặt</p>
-            <Label>{orderDetails?.orderDate.split("T")[0]}</Label>
+            <p className="font-medium">Ngày giao dự kiến</p>
+            <Label>{orderDetails?.estimatedDeliveryDate?.split("T")[0] || "Chưa có"}</Label>
           </div>
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Đơn giá</p>
@@ -69,37 +96,31 @@ function AdminOrderDetailsView({ orderDetails }) {
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Trạng thái đơn hàng</p>
             <Label>
-              <Badge
-                className={`py-1 px-3 ${
-                  orderDetails?.orderStatus === "confirmed"
-                    ? "bg-green-500"
-                    : orderDetails?.orderStatus === "rejected"
-                    ? "bg-red-600"
-                    : "bg-black"
-                }`}
-              >
-                {orderDetails?.orderStatus}
+              <Badge className={`py-1 px-3 ${currentStatus.color}`}>
+                {currentStatus.label}
               </Badge>
             </Label>
           </div>
         </div>
+
         <Separator />
+
         <div className="grid gap-4">
           <div className="grid gap-2">
             <div className="font-medium">Chi tiết đơn hàng</div>
             <ul className="grid gap-3">
-              {orderDetails?.cartItems && orderDetails?.cartItems.length > 0
-                ? orderDetails?.cartItems.map((item) => (
-                    <li className="flex items-center justify-between">
-                      <span>Title: {item.title}</span>
-                      <span>Quantity: {item.quantity}</span>
-                      <span>Price: ${item.price}</span>
-                    </li>
-                  ))
-                : null}
+              {orderDetails?.cartItems?.length > 0 &&
+                orderDetails.cartItems.map((item) => (
+                  <li key={item._id || item.productId} className="flex items-center justify-between">
+                    <span>Title: {item.title}</span>
+                    <span>Quantity: {item.quantity}</span>
+                    <span>Price: ${item.price}</span>
+                  </li>
+                ))}
             </ul>
           </div>
         </div>
+
         <div className="grid gap-4">
           <div className="grid gap-2">
             <div className="font-medium">Thông tin vận chuyển</div>
@@ -118,16 +139,21 @@ function AdminOrderDetailsView({ orderDetails }) {
           <CommonForm
             formControls={[
               {
-                label: "Order Status",
+                label: "Trạng thái vận chuyển",
                 name: "status",
                 componentType: "select",
                 options: [
                   { id: "pending", label: "Đang chờ" },
-                  { id: "inProcess", label: "Đang xử lý" },
-                  { id: "inShipping", label: "Đang vận chuyển" },
+                  { id: "processing", label: "Đang xử lý" },
+                  { id: "shipped", label: "Đang vận chuyển" },
                   { id: "delivered", label: "Giao hàng thành công" },
-                  { id: "rejected", label: "Từ chối đơn hàng" },
+                  { id: "cancelled", label: "Từ chối đơn hàng" },
                 ],
+              },
+              {
+                label: "Ngày giao dự kiến",
+                name: "estimatedDeliveryDate",
+                componentType: "date",
               },
             ]}
             formData={formData}

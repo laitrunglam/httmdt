@@ -37,16 +37,19 @@ export const deleteOrderByAdmin = createAsyncThunk(
   }
 );
 
-// ✅ Cập nhật trạng thái đơn hàng
+// ✅ Cập nhật trạng thái đơn hàng - sửa lại để gửi đủ dữ liệu orderStatus, orderDate, estimatedDeliveryDate
 export const updateOrderStatus = createAsyncThunk(
   "adminOrder/updateOrderStatus",
-  async ({ id, orderStatus }) => {
+  async ({ id, orderStatus, orderDate, estimatedDeliveryDate }) => {
     const response = await axios.put(`http://localhost:5000/api/admin/orders/update/${id}`, {
       orderStatus,
+      orderDate,
+      estimatedDeliveryDate,
     });
-    return response.data.data;
+    return response.data; // ✅ Trả cả success, message và data
   }
 );
+
 
 const adminOrderSlice = createSlice({
   name: "adminOrder",
@@ -72,7 +75,7 @@ const adminOrderSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(getAllOrdersForAdmin.fulfilled, (state, action) => {
-        state.orderList = action.payload; // ✅ Đã fix đúng chỗ này
+        state.orderList = action.payload;
         state.isLoading = false;
       })
       .addCase(getOrderDetailsForAdmin.fulfilled, (state, action) => {
@@ -86,9 +89,14 @@ const adminOrderSlice = createSlice({
       })
       .addCase(updateOrderStatus.fulfilled, (state, action) => {
         const updated = action.payload;
+        // Cập nhật orderList
         const index = state.orderList.findIndex((o) => o._id === updated._id);
         if (index !== -1) {
           state.orderList[index] = updated;
+        }
+        // Cập nhật orderDetails nếu đang xem chi tiết đơn hàng này
+        if (state.orderDetails && state.orderDetails._id === updated._id) {
+          state.orderDetails = updated;
         }
       });
   },
