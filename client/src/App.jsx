@@ -23,6 +23,7 @@ import PaypalReturnPage from "./pages/shopping-view/paypal-return";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import SearchProducts from "./pages/shopping-view/search";
 import ProductDetailPage from "./pages/shopping-view/product-details-page";
+import ConfirmEmailPage from "./pages/auth/confirm-email";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -54,6 +55,10 @@ function App() {
         >
           <Route path="login" element={<AuthLogin />} />
           <Route path="register" element={<AuthRegister />} />
+          <Route
+            path="/auth/confirm-email"
+            element={<ConfirmEmailPage />}
+          />
         </Route>
 
         <Route
@@ -104,6 +109,7 @@ function App() {
           }
         />
 
+        <Route path="/confirm-email" element={<ConfirmEmailPage />} />
 
         <Route path="/unauth-page" element={<UnauthPage />} />
         <Route path="*" element={<NotFound />} />

@@ -101,7 +101,7 @@ function AdminOrdersView() {
                     {orderItem.orderStatus}
                   </Badge>
                 </TableCell>
-                <TableCell>${orderItem.totalAmount}</TableCell>
+                <TableCell>{orderItem.totalAmount}₫</TableCell>
                 <TableCell className="space-x-2">
                   <Button onClick={() => handleFetchOrderDetails(orderItem._id)}>Chi tiết</Button>
                   <Button variant="destructive" onClick={() => handleDelete(orderItem._id)}>Xóa</Button>

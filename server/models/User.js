@@ -19,6 +19,13 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: "user",
   },
+  isEmailConfirmed: {
+    type: Boolean,
+    default: false,
+  },
+  emailConfirmationToken: {
+    type: String,
+  },
 });
 
 const User = mongoose.model("User", UserSchema);

@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const User = require("../../models/User");
+const { sendConfirmationEmail } = require("../../helpers/mailer");
 
 //register
 const registerUser = async (req, res) => {
@@ -15,16 +17,21 @@ const registerUser = async (req, res) => {
       });
 
     const hashPassword = await bcrypt.hash(password, 12);
+    const emailConfirmationToken = crypto.randomBytes(32).toString("hex");
     const newUser = new User({
       userName,
       email,
       password: hashPassword,
+      isEmailConfirmed: false,
+      emailConfirmationToken,
     });
 
     await newUser.save();
+    await sendConfirmationEmail(email, emailConfirmationToken);
     res.status(200).json({
       success: true,
-      message: "Registration successful",
+      message:
+        "Registration successful. Please check your email to confirm your account.",
     });
   } catch (e) {
     console.log(e);
@@ -32,6 +39,26 @@ const registerUser = async (req, res) => {
       success: false,
       message: "Some error occured",
     });
+  }
+};
+
+// Confirm email endpoint
+const confirmEmail = async (req, res) => {
+  const { token } = req.query;
+  try {
+    const user = await User.findOne({ emailConfirmationToken: token });
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired token.",
+      });
+    }
+    user.isEmailConfirmed = true;
+    user.emailConfirmationToken = undefined;
+    await user.save();
+    res.json({ success: true, message: "Email confirmed successfully!" });
+  } catch (e) {
+    res.status(500).json({ success: false, message: "Server error." });
   }
 };
 
@@ -117,4 +144,10 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = { registerUser, loginUser, logoutUser, authMiddleware };
+module.exports = {
+  registerUser,
+  loginUser,
+  logoutUser,
+  authMiddleware,
+  confirmEmail,
+};

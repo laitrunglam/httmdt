@@ -1,5 +1,7 @@
 import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter } from "../ui/card";
+import { useState } from "react";
+import AdminProductDetails from "./product-details";
 
 function AdminProductTile({
   product,
@@ -8,10 +10,15 @@ function AdminProductTile({
   setCurrentEditedId,
   handleDelete,
 }) {
+  const [showDetails, setShowDetails] = useState(false);
+
   return (
     <Card className="w-full max-w-sm mx-auto">
       <div>
-        <div className="relative">
+        <div
+          className="relative cursor-pointer"
+          onClick={() => setShowDetails(true)}
+        >
           <img
             src={product?.image}
             alt={product?.title}
@@ -19,7 +26,12 @@ function AdminProductTile({
           />
         </div>
         <CardContent>
-          <h2 className="text-xl font-bold mb-2 mt-2">{product?.title}</h2>
+          <h2
+            className="text-xl font-bold mb-2 mt-2 cursor-pointer"
+            onClick={() => setShowDetails(true)}
+          >
+            {product?.title}
+          </h2>
           <div className="flex justify-between items-center mb-2">
             <span
               className={`${
@@ -45,6 +57,16 @@ function AdminProductTile({
           </Button>
           <Button onClick={() => handleDelete(product?._id)}>Xóa</Button>
         </CardFooter>
+        {showDetails && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded shadow-lg max-w-lg w-full relative">
+              <AdminProductDetails
+                productId={product._id}
+                onClose={() => setShowDetails(false)}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </Card>
   );

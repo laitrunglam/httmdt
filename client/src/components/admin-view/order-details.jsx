@@ -83,7 +83,7 @@ function AdminOrderDetailsView() {
           </div>
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Đơn giá</p>
-            <Label>${orderDetails?.totalAmount}</Label>
+            <Label>{orderDetails?.totalAmount}₫</Label>
           </div>
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Phương pháp thanh toán</p>
@@ -114,7 +114,7 @@ function AdminOrderDetailsView() {
                   <li key={item._id || item.productId} className="flex items-center justify-between">
                     <span>Title: {item.title}</span>
                     <span>Quantity: {item.quantity}</span>
-                    <span>Price: ${item.price}</span>
+                    <span>Price: {item.price}₫</span>
                   </li>
                 ))}
             </ul>

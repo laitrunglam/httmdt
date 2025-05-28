@@ -18,6 +18,14 @@ import {
 } from "@/store/admin/products-slice";
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ArrowUpDownIcon } from "lucide-react";
 
 const initialFormData = {
   image: null,
@@ -39,6 +47,7 @@ function AdminProducts() {
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [imageLoadingState, setImageLoadingState] = useState(false);
   const [currentEditedId, setCurrentEditedId] = useState(null);
+  const [sort, setSort] = useState(null);
 
   const { productList } = useSelector((state) => state.adminProducts);
   const dispatch = useDispatch();
@@ -96,22 +105,51 @@ function AdminProducts() {
       .every((item) => item);
   }
 
+  function handleSort(value) {
+    setSort(value);
+  }
+
   useEffect(() => {
     dispatch(fetchAllProducts());
   }, [dispatch]);
 
-  console.log(formData, "productList");
+  const sortedProductList = [...(productList || [])];
+  if (sort === "price-lowtohigh") {
+    sortedProductList.sort((a, b) => a.price - b.price);
+  } else if (sort === "price-hightolow") {
+    sortedProductList.sort((a, b) => b.price - a.price);
+  } else if (sort === "stock-lowtohigh") {
+    sortedProductList.sort((a, b) => a.totalStock - b.totalStock);
+  } else if (sort === "stock-hightolow") {
+    sortedProductList.sort((a, b) => b.totalStock - a.totalStock);
+  }
 
   return (
     <Fragment>
-      <div className="mb-5 w-full flex justify-end">
+      <div className="mb-5 w-full flex justify-between items-center">
         <Button onClick={() => setOpenCreateProductsDialog(true)}>
-          Thêm sản phẩm 
+          Thêm sản phẩm
         </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="flex items-center gap-1">
+              <ArrowUpDownIcon className="h-4 w-4" />
+              <span>Sắp xếp</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[200px]">
+            <DropdownMenuRadioGroup value={sort} onValueChange={handleSort}>
+              <DropdownMenuRadioItem value="price-lowtohigh">Giá tăng dần</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="price-hightolow">Giá giảm dần</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="stock-lowtohigh">Tồn kho tăng dần</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="stock-hightolow">Tồn kho giảm dần</DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
-        {productList && productList.length > 0
-          ? productList.map((productItem) => (
+        {sortedProductList && sortedProductList.length > 0
+          ? sortedProductList.map((productItem) => (
               <AdminProductTile
                 setFormData={setFormData}
                 setOpenCreateProductsDialog={setOpenCreateProductsDialog}

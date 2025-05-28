@@ -14,6 +14,7 @@ const initialState = {
 
 function AuthRegister() {
   const [formData, setFormData] = useState(initialState);
+  const [showCheckEmail, setShowCheckEmail] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -25,7 +26,7 @@ function AuthRegister() {
         toast({
           title: data?.payload?.message,
         });
-        navigate("/auth/login");
+        setShowCheckEmail(true);
       } else {
         toast({
           title: data?.payload?.message,
@@ -39,27 +40,35 @@ function AuthRegister() {
 
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Tạo tài khoản
-        </h1>
-        <p className="mt-2">
-          Đã có tài khoản?
-          <Link
-            className="font-medium ml-2 text-primary hover:underline"
-            to="/auth/login"
-          >
-            Đăng nhập
-          </Link>
-        </p>
-      </div>
-      <CommonForm
-        formControls={registerFormControls}
-        buttonText={"Sign Up"}
-        formData={formData}
-        setFormData={setFormData}
-        onSubmit={onSubmit}
-      />
+      {showCheckEmail ? (
+        <div className="p-4 bg-green-100 text-green-800 rounded">
+          Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.
+        </div>
+      ) : (
+        <>
+          <div className="text-center">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              Tạo tài khoản
+            </h1>
+            <p className="mt-2">
+              Đã có tài khoản?
+              <Link
+                className="font-medium ml-2 text-primary hover:underline"
+                to="/auth/login"
+              >
+                Đăng nhập
+              </Link>
+            </p>
+          </div>
+          <CommonForm
+            formControls={registerFormControls}
+            buttonText={"Sign Up"}
+            formData={formData}
+            setFormData={setFormData}
+            onSubmit={onSubmit}
+          />
+        </>
+      )}
     </div>
   );
 }
