@@ -20,3 +20,11 @@ bước 4: mở file payment.controller ra tìm dòng 34 ra thay cái  url bên 
 
 rồi chạy fe vs be như bt là ok
 
+Cài đặt mail xác thực tài khoản:
+- Vào một tài khoản gmail -> security -> tìm app password -> tạo password mới cho app
+- Tạo file .env trong thư mục server: thêm các trường
+  + EMAIL_USER=your mail
+  + EMAIL_PASS=app pasword
+  + FRONTEND_URL=http://localhost:5173
+- Cài đặt xong khi tạo tài khoản thì gmail này sẽ gửi link xác nhận
+- Lưu ý: Không sử dụng mật khẩu gốc của gmail
