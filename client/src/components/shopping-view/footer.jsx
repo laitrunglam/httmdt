@@ -27,9 +27,36 @@ export default function Footer() {
               <span className="text-sm">cskh@shopname.com</span>
             </div>
             <div className="flex space-x-4 mt-6">
-              <a href="#" className="bg-blue-600 p-2 rounded-full hover:bg-blue-700"><FacebookIcon className="w-5 h-5" /></a>
-              <a href="#" className="bg-blue-400 p-2 rounded-full hover:bg-blue-500"><TwitterIcon className="w-5 h-5" /></a>
-              <a href="#" className="bg-pink-600 p-2 rounded-full hover:bg-pink-700"><InstagramIcon className="w-5 h-5" /></a>
+              <a
+                href="https://www.facebook.com/MagonnDesign"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-blue-600 p-2 rounded-full hover:bg-blue-700"
+              >
+                <FacebookIcon className="w-5 h-5" />
+              </a>
+              <a
+                href="https://zalo.me/2705094202747018406"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-blue-400 p-2 rounded-full hover:bg-blue-500 flex items-center justify-center"
+                aria-label="Zalo"
+              >
+                <img
+                  src="https://theme.hstatic.net/200000623993/1001008164/14/zalo.png?v=1927"
+                  alt="Zalo"
+                  className="w-5 h-5 object-contain"
+                  style={{ display: "block" }}
+                />
+              </a>
+              <a
+                href="https://www.instagram.com/magonndesign/#"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-pink-600 p-2 rounded-full hover:bg-pink-700"
+              >
+                <InstagramIcon className="w-5 h-5" />
+              </a>
             </div>
           </div>
 

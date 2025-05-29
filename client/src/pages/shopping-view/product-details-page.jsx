@@ -47,7 +47,8 @@ const ProductDetailPage = () => {
           sizes: raw.sizes || [],
           relatedProducts: raw.relatedProducts || [],
           productId: raw.product._id ,
-          totalStock: raw.product.totalStock || 0
+          totalStock: raw.product.totalStock || 0,
+          description: raw.product.description || '',
         };
         console.log('Normalized Product:', normalized);
         setProduct(normalized);

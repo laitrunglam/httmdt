@@ -31,7 +31,7 @@ exports.createPayment = async (req, res) => {
     item: JSON.stringify(items),
     embed_data: JSON.stringify(embed_data),
     amount: parseInt(amount),
-    callback_url: 'https://a538-2405-4803-fd70-4e10-5d19-8c73-efdd-aa18.ngrok-free.app/api/payment/callback',
+    callback_url: 'https://de69-14-0-22-145.ngrok-free.app/api/payment/callback',
     description: `${username} - Thanh toán đơn hàng #${transID}`,
     bank_code: '',
   };
