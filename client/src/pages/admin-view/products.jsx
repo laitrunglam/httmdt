@@ -26,9 +26,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ArrowUpDownIcon } from "lucide-react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 
 const initialFormData = {
-  image: null,
+  images: [], // đổi từ image: null sang images: []
   title: "",
   description: "",
   category: "",
@@ -43,11 +44,12 @@ function AdminProducts() {
   const [openCreateProductsDialog, setOpenCreateProductsDialog] =
     useState(false);
   const [formData, setFormData] = useState(initialFormData);
-  const [imageFile, setImageFile] = useState(null);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
+  const [imageFiles, setImageFiles] = useState([]); // đổi từ imageFile sang imageFiles (array)
+  const [uploadedImageUrls, setUploadedImageUrls] = useState([]); // đổi sang mảng
   const [imageLoadingState, setImageLoadingState] = useState(false);
   const [currentEditedId, setCurrentEditedId] = useState(null);
   const [sort, setSort] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   const { productList } = useSelector((state) => state.adminProducts);
   const dispatch = useDispatch();
@@ -60,11 +62,9 @@ function AdminProducts() {
       ? dispatch(
           editProduct({
             id: currentEditedId,
-            formData,
+            formData: { ...formData, images: uploadedImageUrls },
           })
         ).then((data) => {
-          console.log(data, "edit");
-
           if (data?.payload?.success) {
             dispatch(fetchAllProducts());
             setFormData(initialFormData);
@@ -75,13 +75,14 @@ function AdminProducts() {
       : dispatch(
           addNewProduct({
             ...formData,
-            image: uploadedImageUrl,
+            images: uploadedImageUrls,
           })
         ).then((data) => {
           if (data?.payload?.success) {
             dispatch(fetchAllProducts());
             setOpenCreateProductsDialog(false);
-            setImageFile(null);
+            setImageFiles([]);
+            setUploadedImageUrls([]);
             setFormData(initialFormData);
             toast({
               title: "Product add successfully",
@@ -101,7 +102,11 @@ function AdminProducts() {
   function isFormValid() {
     return Object.keys(formData)
       .filter((currentKey) => currentKey !== "averageReview")
-      .map((key) => formData[key] !== "")
+      .map((key) =>
+        key === "images"
+          ? uploadedImageUrls.length > 0
+          : formData[key] !== ""
+      )
       .every((item) => item);
   }
 
@@ -147,18 +152,132 @@ function AdminProducts() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
-        {sortedProductList && sortedProductList.length > 0
-          ? sortedProductList.map((productItem) => (
-              <AdminProductTile
-                setFormData={setFormData}
-                setOpenCreateProductsDialog={setOpenCreateProductsDialog}
-                setCurrentEditedId={setCurrentEditedId}
-                product={productItem}
-                handleDelete={handleDelete}
-              />
-            ))
-          : null}
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-200">
+          <thead>
+            <tr className="bg-gray-100 text-left">
+              <th className="p-3 border-b w-10 text-center">
+                {/* Checkbox chọn tất cả */}
+                <input
+                  type="checkbox"
+                  onChange={e => {
+                    if (e.target.checked) {
+                      setSelectedIds(productList.map(p => p._id));
+                    } else {
+                      setSelectedIds([]);
+                    }
+                  }}
+                  checked={selectedIds.length === productList.length && productList.length > 0}
+                />
+              </th>
+              <th className="p-3 border-b w-10 text-center">STT</th>
+              <th className="p-3 border-b">Ảnh</th>
+              <th className="p-3 border-b">Tên</th>
+              <th className="p-3 border-b">Danh mục</th>
+              <th className="p-3 border-b">Giá</th>
+              <th className="p-3 border-b text-center">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            {productList && productList.length > 0 ? (
+              productList.map((productItem, idx) => (
+                <tr key={productItem.id || productItem._id} className="border-b hover:bg-gray-50">
+                  <td className="p-3 text-center align-middle">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(productItem._id)}
+                      onChange={e => {
+                        if (e.target.checked) {
+                          setSelectedIds(prev => [...prev, productItem._id]);
+                        } else {
+                          setSelectedIds(prev => prev.filter(id => id !== productItem._id));
+                        }
+                      }}
+                    />
+                  </td>
+                  <td className="p-3 text-center align-middle">{idx + 1}</td>
+                  <td className="p-3 align-middle">
+                    <img
+                      src={
+                        Array.isArray(productItem.images) && productItem.images.length > 0
+                          ? productItem.images[0]
+                          : "/no-image.png"
+                      }
+                      alt={productItem.title}
+                      className="w-16 h-20 object-cover border"
+                    />
+                  </td>
+                  <td className="p-3 font-medium align-middle">{productItem.title}</td>
+                  <td className="p-3 align-middle">{productItem.category}</td>
+                  <td className="p-3 text-red-600 font-bold align-middle">
+                    {productItem.salePrice > 0
+                      ? productItem.salePrice.toLocaleString("vi-VN") + "₫"
+                      : productItem.price.toLocaleString("vi-VN") + "₫"}
+                  </td>
+                  <td className="p-3 align-middle">
+                    <div className="flex items-center justify-center gap-2">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        title="Xem chi tiết"
+                        onClick={() => {
+                          setFormData(productItem);
+                          setCurrentEditedId(productItem._id);
+                          setUploadedImageUrls(productItem.images || []);
+                          setImageFiles([]);
+                          setOpenCreateProductsDialog(true);
+                        }}
+                      >
+                        <Eye className="w-5 h-5" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        title="Sửa"
+                        onClick={() => {
+                          setFormData(productItem);
+                          setCurrentEditedId(productItem._id);
+                          setUploadedImageUrls(productItem.images || []); // <-- Thêm dòng này
+                          setImageFiles([]); // <-- Reset file local
+                          setOpenCreateProductsDialog(true);
+                        }}
+                      >
+                        <Pencil className="w-5 h-5" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        title="Xóa"
+                        onClick={() => handleDelete(productItem._id)}
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={7} className="text-center py-8 text-gray-400">
+                  Không có sản phẩm nào
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        {/* Nút xóa nhiều */}
+        <div className="mt-4">
+          <Button
+            variant="destructive"
+            disabled={!selectedIds || selectedIds.length === 0}
+            onClick={() => {
+              selectedIds.forEach(id => handleDelete(id));
+              setSelectedIds([]);
+            }}
+          >
+            Xóa các sản phẩm đã chọn
+          </Button>
+        </div>
       </div>
       <Sheet
         open={openCreateProductsDialog}
@@ -166,6 +285,8 @@ function AdminProducts() {
           setOpenCreateProductsDialog(false);
           setCurrentEditedId(null);
           setFormData(initialFormData);
+          setUploadedImageUrls([]); // <-- Reset lại
+          setImageFiles([]);
         }}
       >
         <SheetContent side="right" className="overflow-auto">
@@ -175,10 +296,10 @@ function AdminProducts() {
             </SheetTitle>
           </SheetHeader>
           <ProductImageUpload
-            imageFile={imageFile}
-            setImageFile={setImageFile}
-            uploadedImageUrl={uploadedImageUrl}
-            setUploadedImageUrl={setUploadedImageUrl}
+            imageFiles={imageFiles}
+            setImageFiles={setImageFiles}
+            uploadedImageUrls={uploadedImageUrls}
+            setUploadedImageUrls={setUploadedImageUrls}
             setImageLoadingState={setImageLoadingState}
             imageLoadingState={imageLoadingState}
             isEditMode={currentEditedId !== null}

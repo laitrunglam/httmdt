@@ -58,11 +58,11 @@ export const addProductFormElements = [
     name: "category",
     componentType: "select",
     options: [
-      { id: "men", label: "Nam" },
-      { id: "women", label: "Nữ" },
-      { id: "kids", label: "Trẻ em" },
+      { id: "dress", label: "Váy (Đầm)" },
+      { id: "shirt", label: "Áo" },
+      { id: "pants", label: "Quần" },
+      { id: "skirt", label: "Chân váy" },
       { id: "accessories", label: "Phụ kiện" },
-      { id: "footwear", label: "Giày" },
     ],
   },
   {
@@ -70,7 +70,7 @@ export const addProductFormElements = [
     name: "brand",
     componentType: "select",
     options: [
-      { id: "nike", label: "Nike" },
+      { id: "louisvuitton", label: "Louis Vuitton" }, // Đổi từ nike thành louis vuitton
       { id: "adidas", label: "Adidas" },
       { id: "puma", label: "Puma" },
       { id: "levi", label: "Levi's" },
@@ -105,55 +105,55 @@ export const shoppingViewHeaderMenuItems = [
   {
     id: "home",
     label: "Trang chủ",
-    path: "/shop/home",
+    path: "/",
+  },
+  // {
+  //   id: "products",
+  //   label: "Sản phẩm",
+  //   path: "/shop/listing",
+  // },
+  {
+    id: "dress",
+    label: "Váy (Đầm)",
+    path: "/shop/listing?category=dress",
   },
   {
-    id: "products",
-    label: "Sản phẩm",
-    path: "/shop/listing",
+    id: "shirt",
+    label: "Áo",
+    path: "/shop/listing?category=shirt",
   },
   {
-    id: "men",
-    label: "Nam",
-    path: "/shop/listing",
+    id: "pants",
+    label: "Quần",
+    path: "/shop/listing?category=pants",
   },
   {
-    id: "women",
-    label: "Nữ",
-    path: "/shop/listing",
-  },
-  {
-    id: "kids",
-    label: "Trẻ em",
-    path: "/shop/listing",
-  },
-  {
-    id: "footwear",
-    label: "Giày",
-    path: "/shop/listing",
+    id: "skirt",
+    label: "Chân váy",
+    path: "/shop/listing?category=skirt",
   },
   {
     id: "accessories",
     label: "Phụ kiện",
-    path: "/shop/listing",
+    path: "/shop/listing?category=accessories",
   },
   {
     id: "search",
     label: "Tìm kiếm",
-    path: "/shop/search",   
+    path: "/shop/search",
   },
 ];
 
 export const categoryOptionsMap = {
-  men: "Nam",
-  women: "Nữ",
-  kids: "Trẻ em",
+  dress: "Váy (Đầm)",
+  shirt: "Áo",
+  pants: "Quần",
+  skirt: "Chân váy",
   accessories: "Phụ kiện",
-  footwear: "Giày",
 };
 
 export const brandOptionsMap = {
-  nike: "Nike",
+  louisvuitton: "Louis Vuitton", // Đổi từ nike thành louis vuitton
   adidas: "Adidas",
   puma: "Puma",
   levi: "Levi",
@@ -163,14 +163,14 @@ export const brandOptionsMap = {
 
 export const filterOptions = {
   category: [
-    { id: "men", label: "Nam" },
-    { id: "women", label: "Nữ" },
-    { id: "kids", label: "Trẻ em" },
+    { id: "dress", label: "Váy (Đầm)" },
+    { id: "shirt", label: "Áo" },
+    { id: "pants", label: "Quần" },
+    { id: "skirt", label: "Chân váy" },
     { id: "accessories", label: "Phụ kiện" },
-    { id: "footwear", label: "Giày" },
   ],
   brand: [
-    { id: "nike", label: "Nike" },
+    { id: "louisvuitton", label: "Louis Vuitton" }, // Đổi từ nike thành louis vuitton
     { id: "adidas", label: "Adidas" },
     { id: "puma", label: "Puma" },
     { id: "levi", label: "Levi's" },

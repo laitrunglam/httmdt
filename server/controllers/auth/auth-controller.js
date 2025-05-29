@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const User = require("../../models/User");
 const { sendConfirmationEmail } = require("../../helpers/mailer");
+require('dotenv').config();
 
 //register
 const registerUser = async (req, res) => {

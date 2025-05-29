@@ -1,61 +1,39 @@
 import { Button } from "@/components/ui/button";
-
-import logoBCT from '../../assets/logoSaleNoti.png';
-import visa from '../../assets/Visa.png';
-import cod from '../../assets/cod.png';
-import pay from '../../assets/pay.png';
-
-// import bannerOne from "../../assets/banner-1.webp";
-// import bannerTwo from "../../assets/banner-2.webp";
-// import bannerThree from "../../assets/banner-3.webp";
 import {
   Airplay,
-  BabyIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  // CloudLightning,
   Heater,
   Images,
   Shirt,
-  // ShirtIcon,
   ShoppingBasket,
-  // UmbrellaIcon,
   WashingMachine,
   WatchIcon,
-  Footprints,
-  FacebookIcon,
-  InstagramIcon,
-  TwitterIcon,
-  PhoneIcon,
-  MailIcon,
-  MapPinIcon,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAllFilteredProducts,
-  fetchProductDetails,
 } from "@/store/shop/products-slice";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { useNavigate } from "react-router-dom";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { useToast } from "@/components/ui/use-toast";
-import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
-import ChatUI from "@/components/shopping-view/chatUI";
 
+// Danh mục mới với icon hợp lý
 const categoriesWithIcon = [
-  { id: "men", label: "Nam", icon: WatchIcon },
-  { id: "women", label: "Nữ", icon: WashingMachine },
-  { id: "kids", label: "Trẻ em", icon: BabyIcon },
+  { id: "dress", label: "Váy (Đầm)", icon: Images },
+  { id: "shirt", label: "Áo", icon: Shirt },
+  { id: "pants", label: "Quần", icon: WashingMachine },
+  { id: "skirt", label: "Chân váy", icon: Airplay },
   { id: "accessories", label: "Phụ kiện", icon: WatchIcon },
-  { id: "footwear", label: "Giày", icon: Footprints },
 ];
 
+// Thương hiệu mới với icon hợp lý
 const brandsWithIcon = [
-  { id: "nike", label: "Nike", icon: Shirt },
+  { id: "louisvuitton", label: "Louis Vuitton", icon: WatchIcon },
   { id: "adidas", label: "Adidas", icon: WashingMachine },
   { id: "puma", label: "Puma", icon: ShoppingBasket },
   { id: "levi", label: "Levi's", icon: Airplay },
@@ -65,20 +43,16 @@ const brandsWithIcon = [
 
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { productList, productDetails } = useSelector(
+  const { productList } = useSelector(
     (state) => state.shopProducts
   );
   const { featureImageList } = useSelector((state) => state.commonFeature);
-
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
   const { user } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  const [isChatOpen, setIsChatOpen] = useState(false);
 
   function handleNavigateToListingPage(getCurrentItem, section) {
     sessionStorage.removeItem("filters");
@@ -90,20 +64,20 @@ function ShoppingHome() {
     navigate(`/shop/listing`);
   }
 
-  function handleGetProductDetails(getCurrentProductId) {
-    dispatch(fetchProductDetails(getCurrentProductId));
+  function handleGetProductDetails(productId) {
+    navigate(`/shop/product/${productId}`)
   }
 
   function handleAddtoCart(productId) {
-    if (!user) { // Check if the user is not logged in
+    if (!user) {
       toast({
         title: "Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.",
         variant: "destructive",
       });
-      navigate("/auth/login"); // Redirect to the login page
+      navigate("/auth/login");
       return;
     }
-  
+
     dispatch(
       addToCart({
         userId: user?.id,
@@ -121,10 +95,6 @@ function ShoppingHome() {
   }
 
   useEffect(() => {
-    if (productDetails !== null) setOpenDetailsDialog(true);
-  }, [productDetails]);
-
-  useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prevSlide) => (prevSlide + 1) % featureImageList.length);
     }, 15000);
@@ -140,8 +110,6 @@ function ShoppingHome() {
       })
     );
   }, [dispatch]);
-
-  console.log(productList, "productList");
 
   useEffect(() => {
     dispatch(getFeatureImages());
@@ -249,25 +217,6 @@ function ShoppingHome() {
           </div>
         </div>
       </section>
-
-
-
-      <ProductDetailsDialog
-        open={openDetailsDialog}
-        setOpen={setOpenDetailsDialog}
-        productDetails={productDetails}
-      />
-
-      {/* Floating Chat Icon */}
-      {/* <div
-        className="fixed bottom-5 right-5 bg-blue-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
-        onClick={() => setIsChatOpen(!isChatOpen)}
-      >
-        💬
-      </div> */}
-
-      {/* Chat UI */}
-      {/* {isChatOpen && <ChatUI onClose={() => setIsChatOpen(false)} />} */}
     </div>
   );
 }

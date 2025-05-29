@@ -79,7 +79,7 @@ function UserCartItemsContent({ cartItem, isSelected, onSelectChange }) {
       <img
         src={cartItem?.image}
         alt={cartItem?.title}
-        className="w-20 h-20 rounded object-cover"
+        className="w-12 h-16 rounded object-cover"
       />
       <div className="flex-1">
         <h3 className="font-extrabold">{cartItem?.title}</h3>
@@ -107,12 +107,11 @@ function UserCartItemsContent({ cartItem, isSelected, onSelectChange }) {
         </div>
       </div>
       <div className="flex flex-col items-end">
-        <p className="font-semibold">
-          $
+        <p className="font-semibold text-red-600">
           {(
             (cartItem?.salePrice > 0 ? cartItem?.salePrice : cartItem?.price) *
             cartItem?.quantity
-          ).toFixed(2)}
+          ).toLocaleString("vi-VN")}₫
         </p>
         <Trash
           onClick={() => handleCartItemDelete(cartItem)}

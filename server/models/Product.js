@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const ProductSchema = new mongoose.Schema(
   {
-    image: String,
+    images: [String], // Đổi từ image: String sang images: [String]
     title: String,
     description: String,
     category: String,
@@ -14,7 +14,6 @@ const ProductSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-ProductSchema.index({ title: "text", description: "text" });
 
 ProductSchema.index({ title: "text", description: "text" });
 

@@ -78,6 +78,7 @@ function App() {
         {/* Allow unauthenticated access to shop listing and search */}
         <Route path="/shop" element={<ShoppingLayout />}>
           <Route path="home" element={<ShoppingHome />} />
+          <Route path="product/:productId" element={<ProductDetailPage />} />
           <Route path="listing" element={<ShoppingListing />} /> {/* No CheckAuth */}
           <Route path="search" element={<SearchProducts />} /> {/* No CheckAuth */}
           <Route
@@ -99,15 +100,6 @@ function App() {
           <Route path="paypal-return" element={<PaypalReturnPage />} />
           <Route path="payment-success" element={<PaymentSuccessPage />} />
         </Route>
-
-        <Route
-          path="/product/:productId"
-          element={
-            <ShoppingLayout>
-              <ProductDetailPage />
-            </ShoppingLayout>
-          }
-        />
 
         <Route path="/confirm-email" element={<ConfirmEmailPage />} />
 
